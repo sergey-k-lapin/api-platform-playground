@@ -12,5 +12,11 @@ api_platform:
     # Good cache defaults for REST APIs
     defaults:
         stateless: true
+#        pagination_enabled: false
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
+    graphql:
+        graphql_playground:
+            enabled: true
+        graphiql:
+            enabled: true

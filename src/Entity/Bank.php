@@ -2,20 +2,24 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BankRepository;
-//use ApiPlatform\Metadata\GraphQl\Query;
+use ApiPlatform\Metadata\GraphQl\Query;
+use ApiPlatform\Metadata\GraphQl\QueryCollection;
 
-#[
-    ApiResource(
-        mercure: true,
-        collectionOperations: ['get'],
-        itemOperations: ['get'],
-    )
-]
+#[ApiResource(
+    formats: 'json',
+    mercure: true,
+    paginationClientItemsPerPage: true,
+    graphQlOperations: [
+        new Query(),
+        new QueryCollection(paginationType: 'page'),
+    ]
+)]
+
 #[ORM\Entity(repositoryClass: BankRepository::class)]
 class Bank
 {
@@ -23,69 +27,60 @@ class Bank
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $legalName = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $address = null;
 
+
     #[ORM\OneToMany(mappedBy: 'bank', targetEntity: Account::class)]
+    /**
+     * @var Collection
+     */
     private Collection $accounts;
 
     public function __construct()
     {
         $this->accounts = new ArrayCollection();
     }
-
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
-
-    public function getLegalName(): ?string
+    public function getLegalName() : ?string
     {
         return $this->legalName;
     }
-
-    public function setLegalName(?string $legalName): self
+    public function setLegalName(?string $legalName) : self
     {
         $this->legalName = $legalName;
-
         return $this;
     }
-
-    public function getAddress(): ?string
+    public function getAddress() : ?string
     {
         return $this->address;
     }
-
-    public function setAddress(?string $address): self
+    public function setAddress(?string $address) : self
     {
         $this->address = $address;
-
         return $this;
     }
-
     /**
      * @return Collection<int, Account>
      */
-    public function getAccounts(): Collection
+    public function getAccounts() : Collection
     {
         return $this->accounts;
     }
-
-    public function addAccount(Account $account): self
+    public function addAccount(Account $account) : self
     {
         if (!$this->accounts->contains($account)) {
             $this->accounts->add($account);
             $account->setBankId($this);
         }
-
         return $this;
     }
-
-    public function removeAccount(Account $account): self
+    public function removeAccount(Account $account) : self
     {
         if ($this->accounts->removeElement($account)) {
             // set the owning side to null (unless already changed)
@@ -93,7 +88,6 @@ class Bank
                 $account->setBankId(null);
             }
         }
-
         return $this;
     }
 }

@@ -1,4 +1,6 @@
 api_platform:
+    metadata_backward_compatibility_layer: false
+
     title: Hello API Platform
     version: 1.0.0
     mapping:
